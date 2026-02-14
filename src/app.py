@@ -58,6 +58,58 @@ def create_user():
     db.session.commit()
     return jsonify(user.serialize()), 200
 
+@app.route('/planets', methods=['POST'])
+def create_planet():
+    body = request.get_json()
+
+    if not body or "name" not in body:
+        return jsonify({"msg": "El nombre del planeta es obligatorio"}), 400
+
+    planet_exists = Planets.query.filter_by(name=body['name']).first()
+    if planet_exists:
+        return jsonify({"msg": "Este planeta ya está registrado"}), 400
+
+    new_planet = Planets()
+    new_planet.name=body.get("name"),
+    new_planet.rotation_period=body.get("rotation_period"),
+    new_planet.orbital_period=body.get("orbital_period"),
+    new_planet.diameter=body.get("diameter"),
+    new_planet.climate=body.get("climate"),
+    new_planet.gravity=body.get("gravity"),
+    new_planet.terrain=body.get("terrain"),
+    new_planet.surface_water=body.get("surface_water"),
+    new_planet.population=body.get("population")
+
+    db.session.add(new_planet)
+    db.session.commit()
+    return jsonify(new_planet.serialize()), 201
+
+@app.route('/people', methods=['POST'])
+def create_person():
+    body = request.get_json()
+
+    if not body or "name" not in body:
+        return jsonify({"msg": "El nombre del personaje es obligatorio"}), 400
+
+    person_exists = People.query.filter_by(name=body['name']).first()
+    if person_exists:
+        return jsonify({"msg": "Este personaje ya está registrado"}), 400
+
+    new_person = People()
+    new_person.name=body.get("name"),
+    new_person.height=body.get("height"),
+    new_person.mass=body.get("mass"),
+    new_person.hair_color=body.get("hair_color"),
+    new_person.skin_color=body.get("skin_color"),
+    new_person.eye_color=body.get("eye_color"),
+    new_person.birth_year=body.get("birth_year"),
+    new_person.gender=body.get("gender")
+
+    db.session.add(new_person)
+    db.session.commit()
+    return jsonify(new_person.serialize()), 201
+  
+
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     user = User.query.get(user_id)
@@ -96,15 +148,11 @@ def people_list():
 
 @app.route('/people/<int:people_id>', methods=['GET'])
 def people(people_id):
-    people = User.query.get(people_id)
+    people = People.query.get(people_id)
     if people is None:
         return jsonify({"msg": "Personaje no encontrado"}), 404
     
-    people_exist = User.query.filter_by(id=people_id).first()
-    response_body = {
-        "personajes": people_exist
-    }
-    return jsonify(response_body), 200
+    return jsonify(people.serialize()), 201
 
 @app.route('/planet', methods=['GET'])
 def planet_list():
@@ -124,11 +172,17 @@ def planet(planet_id):
     if planet is None:
         return jsonify({"msg": "Planeta no encontrado"}), 404
     
-    planet_exist = Planets.query.filter_by(id=planet_id).first()
-    response_body = {
-        "personajes": planet_exist
-    }
-    return jsonify(response_body), 200
+    return jsonify(planet.serialize()), 201
+
+@app.route('/user/<int:user_id_act>/favorites', methods=['GET'])
+def user_favorite(user_id_act):
+    fav_people = Favorite_people.query.filter_by(user_id = user_id_act).first()
+    if fav_people is None:
+        return jsonify({"msg": "Usuario no tiene favoritos"}), 404
+    
+    
+    return jsonify(fav_people.serialize()), 201
+
 
 
 # this only runs if `$ python src/app.py` is executed
