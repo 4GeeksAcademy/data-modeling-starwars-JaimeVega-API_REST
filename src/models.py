@@ -30,16 +30,16 @@ class User(db.Model):
 
 class Favorite_people(db.Model):
     __tablename__ = "favorite_people"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
-    people_id: Mapped[int] = mapped_column(ForeignKey("people.id"), nullable=False)
+    """ id: Mapped[int] = mapped_column(primary_key=True) """
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"),  primary_key=True)
+    people_id: Mapped[int] = mapped_column(ForeignKey("people.id"),  primary_key=True)
     added_date: Mapped[datetime.datetime] = mapped_column(DateTime(), default=datetime.datetime.utcnow)
     user_rel: Mapped["User"] = relationship(back_populates="favorites_people")
     person_rel: Mapped["People"] = relationship(back_populates="favorited_by")
 
     def serialize(self):
         return {
-            "id": self.id,
+            
             "user_id": self.user_id,
             "people_id": self.people_id,
             "added_date": self.added_date
@@ -47,16 +47,16 @@ class Favorite_people(db.Model):
 
 class Favorite_planets(db.Model):
     __tablename__ = "favorite_planets"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
-    planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"), nullable=False)
+    """ id: Mapped[int] = mapped_column(primary_key=True) """
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"), primary_key=True)
     added_date: Mapped[datetime.datetime] = mapped_column(DateTime(), default=datetime.datetime.utcnow)
     user_rel: Mapped["User"] = relationship(back_populates="favorites_planets")
     planet_rel: Mapped["Planets"] = relationship(back_populates="favorited_by")
 
     def serialize(self):
         return {
-            "id": self.id,
+            
             "user_id": self.user_id,
             "planet_id": self.planet_id,
             "added_date": self.added_date
